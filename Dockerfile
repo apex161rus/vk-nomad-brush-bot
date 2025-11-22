@@ -31,5 +31,7 @@ COPY --from=build /app ./
 # Копируем папку с слоями
 COPY Overlay ./Overlay/
 
+COPY Brush ./Brush/
+
 # Указываем команду запуска
 ENTRYPOINT ["dotnet", "vk_bot_img.dll"]
