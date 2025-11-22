@@ -551,9 +551,23 @@ class Program
 
                                 using var httpClient = new HttpClient();
                                 using var form = new MultipartFormDataContent();
-                                using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_ios.PNG");
+                                // using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_ios.PNG");
 
-                                form.Add(new StreamContent(fileStream), "photo", "Instruction_ios.PNG");
+                                string imagePathDocker = Path.Combine(basePath, "Overlay", "Instruction_ios.PNG");
+                                string fileStream = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_ios.PNG";
+
+                                // Выбираем существующий путь
+                                string finalImagePath = GetPath(imagePathDocker, fileStream);
+
+                                if (string.IsNullOrEmpty(finalImagePath))
+                                {
+                                    Console.WriteLine("❌ Не найден Image-файл!");
+                                    return;
+                                }
+
+                                using var fileStream1 = File.OpenRead(finalImagePath);
+
+                                form.Add(new StreamContent(fileStream1), "photo", "Instruction_ios.PNG");
 
                                 // 2️⃣ Загружаем фото на сервер VK
                                 var response = await httpClient.PostAsync(uploadServer.UploadUrl, form);
@@ -584,9 +598,24 @@ class Program
 
                                 using var httpClient = new HttpClient();
                                 using var form = new MultipartFormDataContent();
-                                using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_Android.PNG");
 
-                                form.Add(new StreamContent(fileStream), "photo", "Instruction_Android.PNG");
+                                string imagePathDocker = Path.Combine(basePath, "Overlay", "Instruction_Android.PNG");
+                                string fileStream = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_Android.PNG";
+
+                                // Выбираем существующий путь
+                                string finalImagePath = GetPath(imagePathDocker, fileStream);
+
+                                if (string.IsNullOrEmpty(finalImagePath))
+                                {
+                                    Console.WriteLine("❌ Не найден Image-файл!");
+                                    return;
+                                }
+
+                                using var fileStream1 = File.OpenRead(finalImagePath);
+
+                                // using var fileStream = File.OpenRead(finalImagePath);
+
+                                form.Add(new StreamContent(fileStream1), "photo", "Instruction_Android.PNG");
 
                                 // 2️⃣ Загружаем фото на сервер VK
                                 var response = await httpClient.PostAsync(uploadServer.UploadUrl, form);
@@ -617,9 +646,23 @@ class Program
 
                                 using var httpClient = new HttpClient();
                                 using var form = new MultipartFormDataContent();
-                                using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_PK.PNG");
+                                // using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_PK.PNG");
 
-                                form.Add(new StreamContent(fileStream), "photo", "Instruction_PK.PNG");
+                                string imagePathDocker = Path.Combine(basePath, "Overlay", "Instruction_PK.PNG");
+                                string fileStream = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Instruction_PK.PNG";
+
+                                // Выбираем существующий путь
+                                string finalImagePath = GetPath(imagePathDocker, fileStream);
+
+                                if (string.IsNullOrEmpty(finalImagePath))
+                                {
+                                    Console.WriteLine("❌ Не найден Image-файл!");
+                                    return;
+                                }
+
+                                using var fileStream1 = File.OpenRead(finalImagePath);
+
+                                form.Add(new StreamContent(fileStream1), "photo", "Instruction_PK.PNG");
 
                                 // 2️⃣ Загружаем фото на сервер VK
                                 var response = await httpClient.PostAsync(uploadServer.UploadUrl, form);
