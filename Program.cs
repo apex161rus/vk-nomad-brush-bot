@@ -308,9 +308,21 @@ class Program
                                 using var httpClient = new HttpClient();
                                 using var form = new MultipartFormDataContent();
                                 
-                                using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Fur.PNG");
+                                string imagePathDocker = Path.Combine(basePath, "Overlay", "Fur.PNG");
+                                string fileStream = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Fur.PNG";
 
-                                form.Add(new StreamContent(fileStream), "photo", "Fur.PNG");
+                                // Выбираем существующий путь
+                                string finalImagePath = GetPath(imagePathDocker, fileStream);
+
+                                if (string.IsNullOrEmpty(finalImagePath))
+                                {
+                                    Console.WriteLine("❌ Не найден Image-файл!");
+                                    return;
+                                }
+
+                                using var fileStream1 = File.OpenRead(finalImagePath);
+
+                                form.Add(new StreamContent(fileStream1), "photo", "Fur.PNG");
 
                                 // 2️⃣ Загружаем фото на сервер VK
                                 var response = await httpClient.PostAsync(uploadServer.UploadUrl, form);
@@ -350,11 +362,11 @@ class Program
                                     Console.WriteLine("❌ Не найден ZIP-файл!");
                                     return;
                                 }
-                                using var fileStream1 = File.OpenRead(finalZipPath);
+                                using var fileStream2 = File.OpenRead(finalZipPath);
                                 // string overlayPath = Path.Combine(basePath, "Overlay", "logo.PNG");
 
                                 // ⚠️ ВАЖНО: поле должно называться "file", иначе VK не примет
-                                form1.Add(new StreamContent(fileStream1), "file", "FurBrushSet.zip");
+                                form1.Add(new StreamContent(fileStream2), "file", "FurBrushSet.zip");
 
                                 // 3️⃣ Загружаем ZIP на сервер VK
                                 var uploadResponse1 = await httpClient1.PostAsync(uploadServer1.UploadUrl, form1);
