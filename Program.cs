@@ -23,7 +23,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        
+
         var xmlDoc = new XmlDocument();
                 string Config()
         {
@@ -307,6 +307,7 @@ class Program
 
                                 using var httpClient = new HttpClient();
                                 using var form = new MultipartFormDataContent();
+                                
                                 using var fileStream = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Fur.PNG");
 
                                 form.Add(new StreamContent(fileStream), "photo", "Fur.PNG");
@@ -334,7 +335,23 @@ class Program
                                 // 2️⃣ Готовим запрос
                                 using var httpClient1 = new HttpClient();
                                 using var form1 = new MultipartFormDataContent();
-                                using var fileStream1 = File.OpenRead("/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Brush/FurBrushSet.zip");
+
+                                // Относительный путь к ZIP внутри контейнера / локально
+                                string zipPathDocker = Path.Combine(basePath, "Brush", "FurBrushSet.zip");
+
+                                // Абсолютный путь на Mac (старый)
+                                string zipPathMac = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Brush/FurBrushSet.zip";
+
+                                // Выбираем существующий путь
+                                string finalZipPath = GetPath(zipPathDocker, zipPathMac);
+
+                                if (string.IsNullOrEmpty(finalZipPath))
+                                {
+                                    Console.WriteLine("❌ Не найден ZIP-файл!");
+                                    return;
+                                }
+                                using var fileStream1 = File.OpenRead(finalZipPath);
+                                // string overlayPath = Path.Combine(basePath, "Overlay", "logo.PNG");
 
                                 // ⚠️ ВАЖНО: поле должно называться "file", иначе VK не примет
                                 form1.Add(new StreamContent(fileStream1), "file", "FurBrushSet.zip");
