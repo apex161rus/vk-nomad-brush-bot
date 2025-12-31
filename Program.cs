@@ -169,10 +169,10 @@ class Program
                         Action = new MessageKeyboardButtonAction
                         {
                             Type = KeyboardButtonActionType.Callback,
-                            Label = "🖋 Кисти #2",
+                            Label = "🪡Cloth🧷Fix🧵",
                             Payload = "{\"cmd\":\"brush2\"}"
                         },
-                        Color = KeyboardButtonColor.Negative
+                        Color = KeyboardButtonColor.Positive
                     },
                     new MessageKeyboardButton
                     {
@@ -445,9 +445,102 @@ class Program
                                     eventData: new EventData
                                     {
                                         Type = MessageEventType.ShowSnackbar,
-                                        Text = "Этот набор кистей скоро будет доступен. ⛔️"
+                                        Text = "✅ Вот ваши кисти 🪡Cloth🧷Fix🧵"
                                     }
                                 );
+
+                                long? groupId1 = 69383700; // ID вашей группы
+
+                                // 1️⃣ Получаем URL для загрузки фото
+                                var uploadServer = await bot.Photo.GetMessagesUploadServerAsync(groupId1);
+
+                                using var httpClient = new HttpClient();
+                                using var form = new MultipartFormDataContent();
+                                
+                                string imagePathDocker = Path.Combine(basePath, "Overlay", "Test.PNG");
+                                string fileStream = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Overlay/Test.PNG";
+
+                                // Выбираем существующий путь
+                                string finalImagePath = GetPath(imagePathDocker, fileStream);
+
+                                if (string.IsNullOrEmpty(finalImagePath))
+                                {
+                                    Console.WriteLine("❌ Не найден Image-файл!");
+                                    return;
+                                }
+
+                                using var fileStream1 = File.OpenRead(finalImagePath);
+
+                                form.Add(new StreamContent(fileStream1), "photo", "Test.PNG");
+
+                                // 2️⃣ Загружаем фото на сервер VK
+                                var response = await httpClient.PostAsync(uploadServer.UploadUrl, form);
+                                string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                                // 3️⃣ Сохраняем фото на серверах VK
+                                var savedPhotos = await bot.Photo.SaveMessagesPhotoAsync(jsonResponse);
+                                var photo = savedPhotos.FirstOrDefault();
+
+                                // 4️⃣ Отправляем сообщение с фото
+                                await bot.Messages.SendAsync(new MessagesSendParams
+                                {
+                                    PeerId = messageEvent.PeerId.Value,
+                                    Message = "🪡Cloth🧷Fix🧵",
+                                    Attachments = new List<MediaAttachment> { photo },
+                                    RandomId = new Random().Next()
+                                });
+
+                                // 1️⃣ Получаем сервер для загрузки документов
+                                var uploadServer1 = await bot.Docs.GetMessagesUploadServerAsync(messageEvent.PeerId.Value);
+
+                                // 2️⃣ Готовим запрос
+                                using var httpClient1 = new HttpClient();
+                                using var form1 = new MultipartFormDataContent();
+
+                                // Относительный путь к ZIP внутри контейнера / локально
+                                string zipPathDocker = Path.Combine(basePath, "Brush", "ClothFix.zip");
+
+                                // Абсолютный путь на Mac (старый)
+                                string zipPathMac = "/Users/vladislavfurazkin/Desktop/vk_bot/vk_bot_img/Brush/ClothFix.zip";
+
+                                // Выбираем существующий путь
+                                string finalZipPath = GetPath(zipPathDocker, zipPathMac);
+
+                                if (string.IsNullOrEmpty(finalZipPath))
+                                {
+                                    Console.WriteLine("❌ Не найден ZIP-файл!");
+                                    return;
+                                }
+                                using var fileStream2 = File.OpenRead(finalZipPath);
+                                // string overlayPath = Path.Combine(basePath, "Overlay", "logo.PNG");
+
+                                // ⚠️ ВАЖНО: поле должно называться "file", иначе VK не примет
+                                form1.Add(new StreamContent(fileStream2), "file", "ClothFix.zip");
+
+                                // 3️⃣ Загружаем ZIP на сервер VK
+                                var uploadResponse1 = await httpClient1.PostAsync(uploadServer1.UploadUrl, form1);
+                                string uploadJson1 = await uploadResponse1.Content.ReadAsStringAsync();
+
+                                // 4️⃣ Сохраняем документ на серверах VK
+                                var savedDoc = await bot.Docs.SaveAsync(uploadJson1, "ClothFix", "zip");
+                                // var document = savedDoc.Doc;
+                                var document = savedDoc.FirstOrDefault()?.Instance as MediaAttachment;
+                                
+                                if (document != null)
+                                {
+                                    // 4. Отправляем пользователю документ
+                                    await bot.Messages.SendAsync(new VkNet.Model.MessagesSendParams
+                                    {
+                                        PeerId = messageEvent.PeerId.Value,
+                                        Message = "✅ Вот ваши кисти 🪡Cloth🧷Fix🧵",
+                                        Attachments = new List<MediaAttachment> { document },
+                                        // Attachments = new List<VkNet.Model.Attachments.MediaAttachment> { document },
+                                        RandomId = new Random().Next()
+                                    });
+                                }
+
+
+
                                 // 🧩 Теперь редактируем сообщение, например, меняем текст
                                 // await bot.Messages.EditAsync(new MessageEditParams
                                 // {
